@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 平板json数据括号转义
+ */
 public class SwitchRfidJson {
 
     public static void main(String[] args) {
