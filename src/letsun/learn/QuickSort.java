@@ -1,4 +1,4 @@
-package learn;
+package letsun.learn;
 
 /**
  * 快速排序
