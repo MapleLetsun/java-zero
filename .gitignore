@@ -17,5 +17,4 @@ gen
 java-zero.iml
 out/production/java-zero/letsun/
 out/production/java-zero/test/
-src/Leetcode/
 src/test/
