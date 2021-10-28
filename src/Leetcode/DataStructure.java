@@ -9,12 +9,14 @@ import java.util.regex.Pattern;
 public class DataStructure {
 
     public static void main(String[] args) {
+        DataStructure dataStructure =new DataStructure();
+
         int[] nums1={1,2};
 
         int[] nums2={1,1};
 
 
-        int[][] ns= {{1,2},{3,4}};
+        int[][] ns= {{1,1,1},{1,0,1},{1,1,1}};
         char[][] c={
                 {'5','3','.','.','7','.','.','.','.'},
                 {'6','.','.','1','9','5','.','.','.'},
@@ -26,12 +28,12 @@ public class DataStructure {
                 {'.','.','.','4','1','9','.','.','5'},
                 {'.','.','.','.','8','.','.','7','9'}};
 
-
-        System.out.println(isValidSudoku(c));
+        dataStructure.setZeroes(ns);
+        System.out.println(dataStructure.isValidSudoku(c));
         System.out.println("end");
     }
 
-    private static  void test(){
+    public  void test(){
 
     }
 
@@ -41,7 +43,7 @@ public class DataStructure {
      * 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
      * 你可以按任意顺序返回答案。
      */
-    private static int[] twoSum(int[] nums, int target) {
+    public int[] twoSum(int[] nums, int target) {
         for(int i=0;i<nums.length;i++){
             for(int m=i+1;m<nums.length;m++){
                 if(target-nums[i]==nums[m]){
@@ -60,7 +62,7 @@ public class DataStructure {
      * 数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。（请参考示例图）
      * 数独部分空格内已填入了数字，空白格用 '.' 表示。
      */
-    private static boolean isValidSudoku(char[][] board) {
+    public boolean isValidSudoku(char[][] board) {
         //1.找到相同数字所在的坐标
         Map<Character,List<int[]>> total=new HashMap<>(81);
         Character ch;
@@ -115,7 +117,7 @@ public class DataStructure {
      * 给你两个按 非递减顺序 排列的整数数组 nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。
      * 请你 合并 nums2 到 nums1 中，使合并后的数组同样按 非递减顺序 排列。
      */
-    private static void merge(int[] nums1, int m, int[] nums2, int n) {
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
         for(int i=0;i< nums2.length;i++){
             nums1[m+i]=nums2[i];
         }
@@ -126,7 +128,7 @@ public class DataStructure {
      * 53. 最大子序和
      * 给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
      */
-    private static int maxSubArray(int[] nums) {
+    public int maxSubArray(int[] nums) {
         /*int total=0;
         int  max=nums[0];
 
@@ -163,10 +165,50 @@ public class DataStructure {
     }
 
     /**
+     * 73. 矩阵置零
+     * 给定一个 m x n 的矩阵，如果一个元素为 0 ，则将其所在行和列的所有元素都设为 0 。请使用 原地 算法。
+     *
+     * 进阶：
+
+     * 一个直观的解决方案是使用  O(mn) 的额外空间，但这并不是一个好的解决方案。
+     * 一个简单的改进方案是使用 O(m + n) 的额外空间，但这仍然不是最好的解决方案。
+     * 你能想出一个仅使用常量空间的解决方案吗？
+     */
+
+    public <Char> void setZeroes(int[][] matrix) {
+        Set lineNum=new HashSet<Integer>();
+        int[] lineZero = new int[matrix[0].length];
+        for(int i=0;i<matrix[0].length;i++){
+            lineZero[i]=0;
+        }
+        boolean flag;
+
+        for (int n=0;n<matrix.length;n++){
+            flag=false;
+            for(int m=0;m<matrix[n].length;m++){
+                if(matrix[n][m]==0){
+                    flag=true;
+                    lineNum.add(m);
+                    for(int r=n-1;r>=0;r--){
+                        matrix[r][m]=0;
+                    }
+                }else{
+                    if(!flag && lineNum.contains(m)){
+                        matrix[n][m]=0;
+                    }
+                }
+            }
+            if(flag){
+                matrix[n]=lineZero;
+            }
+        }
+    }
+
+    /**
      * 118. 杨辉三角
      * 给定一个非负整数 numRows，生成「杨辉三角」的前 numRows 行。
      */
-    private static List<List<Integer>> generate(int numRows) {
+    public List<List<Integer>> generate(int numRows) {
         List<List<Integer>> result=new ArrayList<List<Integer>>(numRows);
         List<Integer> nl=null;
         for(int m=0;m<numRows;m++){
@@ -193,7 +235,7 @@ public class DataStructure {
      * 你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
      * 返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
      */
-    private static int maxProfit(int[] prices) {
+    public int maxProfit(int[] prices) {
         int money= 0;
         int now = prices[0];
         int max = prices[0];
@@ -217,7 +259,7 @@ public class DataStructure {
      * 给定一个整数数组，判断是否存在重复元素。
      * 如果存在一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。
      */
-    private static boolean containsDuplicate(int[] nums){
+    public boolean containsDuplicate(int[] nums){
        /* for(int i=0;i<nums.length;i++){
             for (int m=i+1;m<nums.length;m++){
                 if(nums[i]==nums[m]){
@@ -238,10 +280,40 @@ public class DataStructure {
     }
 
     /**
+     * 301. 删除无效的括号
+     * 给你一个由若干括号和字母组成的字符串 s ，删除最小数量的无效括号，使得输入的字符串有效。
+     * 返回所有可能的结果。答案可以按 任意顺序 返回。
+     */
+    public List<String> removeInvalidParentheses(String s) {
+        String ss="()())()";
+        s=ss;
+
+        //检测出一对括号
+        boolean flag=false;
+        List<Integer> loc=new ArrayList(s.length()/2);
+        for(int i=0;i<s.length();i++){
+            if(s.charAt(i)=='('){
+                flag=true;
+            }else if(s.charAt(i)==')'){
+                if(flag){
+                    loc.add(i-1);
+                    flag=false;
+                }
+            }
+        }
+
+
+
+
+
+        return null;
+    }
+
+    /**
      * 350. 两个数组的交集 II
      * 给定两个数组，编写一个函数来计算它们的交集。
      */
-    private static int[] intersect(int[] nums1, int[] nums2) {
+    public int[] intersect(int[] nums1, int[] nums2) {
         Map<Integer, Integer> map=new HashMap<Integer, Integer>(100);
 
         if(nums1.length<nums2.length){
@@ -271,13 +343,65 @@ public class DataStructure {
     }
 
     /**
+     * 387. 字符串中的第一个唯一字符
+     * 给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
+     */
+    public int firstUniqChar(String s) {
+        Set check=new HashSet<Character>(s.length());
+        Set result = new HashSet<Character>(s.length());
+        for(int i=0;i<s.length();i++){
+            if(check.contains(s.charAt(i))){
+                result.add(s.charAt(i));
+            }else{
+                check.add(s.charAt(i));
+            }
+        }
+        for(int i=0;i<s.length();i++){
+            if(!result.contains(s.charAt(i))){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 496. 下一个更大元素 I
+     * 给你两个 没有重复元素 的数组 nums1 和 nums2 ，其中nums1 是 nums2 的子集。
+     * 请你找出 nums1 中每个元素在 nums2 中的下一个比其大的值。
+     * nums1 中数字 x 的下一个更大元素是指 x 在 nums2 中对应位置的右边的第一个比 x 大的元素。如果不存在，对应位置输出 -1 。
+     */
+    public int[] nextGreaterElement(int[] nums1, int[] nums2) {
+        int num;
+        boolean compare;
+        for(int n=0;n<nums1.length;n++){
+            num=nums1[n];
+            compare=false;
+            for(int m=0;m<nums2.length;m++){
+                if(nums2[m]==num){
+                    compare=true;
+                }
+                if(compare){
+                    if(nums2[m]>num){
+                        nums1[n]=nums2[m];
+                        break;
+                    }
+                }
+            }
+            if (num==nums1[n]){
+                nums1[n]=-1;
+            }
+        }
+        return nums1;
+    }
+    
+    /**
      * 566. 重塑矩阵
      * 在 MATLAB 中，有一个非常有用的函数 reshape ，它可以将一个 m x n 矩阵重塑为另一个大小不同（r x c）的新矩阵，但保留其原始数据。
      * 给你一个由二维数组 mat 表示的 m x n 矩阵，以及两个正整数 r 和 c ，分别表示想要的重构的矩阵的行数和列数。
      * 重构后的矩阵需要将原始矩阵的所有元素以相同的 行遍历顺序 填充。
      * 如果具有给定参数的 reshape 操作是可行且合理的，则输出新的重塑矩阵；否则，输出原始矩阵。
      */
-    private static int[][] matrixReshape(int[][] mat, int r, int c) {
+    public int[][] matrixReshape(int[][] mat, int r, int c) {
         int total=mat.length*mat[0].length;
         if(total!=r*c){
             return mat;
