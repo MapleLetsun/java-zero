@@ -1,15 +1,15 @@
 package Leetcode;
 
+import java.lang.reflect.Array;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * 数据结构
  */
-public class DataStructure {
+public class Solution {
 
     public static void main(String[] args) {
-        DataStructure dataStructure =new DataStructure();
+        Solution solution =new Solution();
 
         int[] nums1={1,2};
 
@@ -28,8 +28,13 @@ public class DataStructure {
                 {'.','.','.','4','1','9','.','.','5'},
                 {'.','.','.','.','8','.','.','7','9'}};
 
-        dataStructure.setZeroes(ns);
-        System.out.println(dataStructure.isValidSudoku(c));
+
+
+
+        List<String> listStr=solution.removeInvalidParentheses("()(x()x((x(x((");
+        for(String str:listStr){
+            System.out.println(str);
+        }
         System.out.println("end");
     }
 
@@ -285,28 +290,165 @@ public class DataStructure {
      * 返回所有可能的结果。答案可以按 任意顺序 返回。
      */
     public List<String> removeInvalidParentheses(String s) {
-        String ss="()())()";
-        s=ss;
+        List<Set<String>> section=new ArrayList<>(s.length());
+        Set<String> strSet;
+        StringBuffer str;
 
-        //检测出一对括号
-        boolean flag=false;
-        List<Integer> loc=new ArrayList(s.length()/2);
-        for(int i=0;i<s.length();i++){
-            if(s.charAt(i)=='('){
-                flag=true;
-            }else if(s.charAt(i)==')'){
-                if(flag){
-                    loc.add(i-1);
-                    flag=false;
+        int start=0;
+        int end=-1;
+        int balance=0;
+
+        char[] sc= s.toCharArray();
+
+        for(int i=0;i<sc.length;i++){
+            if (sc[i] =='(') {
+                balance++;
+            }else if(sc[i]==')'){
+                balance--;
+                end=i;
+            }
+
+            if(balance<0){
+                //处理start到end
+                strSet=new HashSet<>();
+                str=new StringBuffer();
+                for(int n=start;n<=end;n++){
+                    str.append(sc[n]);
                 }
+                for(int m=0;m<str.length();m++){
+                    if (str.charAt(m)==')'){
+                        str.delete(m,m+1);
+                        if(str.length()>0){
+                            strSet.add(str.toString());
+                        }
+                        str.replace(m,m,")");
+                    }
+                }
+                if(strSet.size()>0){
+                    section.add(strSet);
+                }
+                start=i+1;
+                balance=0;
             }
         }
 
+        if(balance>0){
+            //处理start到i
+            //镜像 处理 镜像
+            strSet=new HashSet<>();
+            str=new StringBuffer();
+            for(int n=sc.length-1;n>=start;n--){
+                if(sc[n]=='('){
+                    str.append(')');
+                }else if(sc[n]==')'){
+                    str.append('(');
+                }else{
+                    str.append(sc[n]);
+                }
+            }
 
+            start=0;
+            end=-1;
+            balance=0;
+            sc=str.toString().toCharArray();
 
+            List<Set<String>> sectionLast=new ArrayList<>(s.length());
+            for(int i=0;i<sc.length;i++){
+                if (sc[i] =='(') {
+                    balance++;
+                }else if(sc[i]==')'){
+                    balance--;
+                    end=i;
+                }else{
+                    end=i;
+                }
 
+                if(balance<0){
+                    //处理start到end
+                    strSet=new HashSet<>();
+                    str=new StringBuffer();
+                    for(int n=start;n<=end;n++){
+                        str.append(sc[n]);
+                    }
+                    for(int m=0;m<str.length();m++){
+                        if (str.charAt(m)==')'){
+                            str.delete(m,m+1);
+                            if(str.length()>0){
+                                strSet.add(str.toString());
+                            }
+                            str.replace(m,m,")");
+                        }
+                    }
+                    sectionLast.add(strSet);
+                    start=i+1;
+                    balance=0;
+                }else if(balance==0){
+                    strSet=new HashSet<>();
+                    str=new StringBuffer();
+                    for(int in=start;in<=end;in++){
+                        str.append(sc[in]);
+                    }
+                    if(str.length()>0){
+                        strSet.add(str.toString());
+                    }
 
-        return null;
+                    if(strSet.size()>0){
+                        section.add(strSet);
+                    }
+                    start=i+1;
+                }
+            }
+
+            for(int i=sectionLast.size()-1;i>=0;i--){
+                Set<String> lastSet=sectionLast.get(i);
+                Set<String> lastSetIn=new HashSet<>();
+                for(String strLast:lastSet){
+                    strLast=new StringBuffer(strLast).reverse().toString();
+                    strLast=strLast.replace('(','#');
+                    strLast=strLast.replace(')','(');
+                    strLast=strLast.replace('#',')');
+                    lastSetIn.add(strLast);
+                }
+                if(lastSet.size()>0){
+                    section.add(lastSetIn);
+                }
+            }
+        }else{
+            strSet=new HashSet<>();
+            str=new StringBuffer();
+            for(int i=start;i<sc.length;i++){
+                str.append(sc[i]);
+            }
+            strSet.add(str.toString());
+
+            section.add(strSet);
+        }
+
+        Set<String> resultSet=new HashSet<>();
+        Set<String> betweentSet=new HashSet<>();
+        for(Set<String> secSet:section){
+            for(String sec:secSet){
+                if(resultSet.isEmpty()){
+                    betweentSet.add(sec);
+                }else{
+                    for(String finalStr:resultSet){
+                        betweentSet.add(finalStr+sec);
+                    }
+                }
+            }
+            resultSet=betweentSet;
+            betweentSet=new HashSet<>();
+        }
+
+        List<String> resultList=new ArrayList<>(s.length());
+        for(String finalStr:resultSet){
+            resultList.add(finalStr);
+        }
+
+        if(resultList.size()==0){
+            resultList.add("");
+        }
+        return resultList;
     }
 
     /**
