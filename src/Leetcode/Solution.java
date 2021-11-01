@@ -1,7 +1,7 @@
 package Leetcode;
 
-import java.lang.reflect.Array;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * 数据结构
@@ -11,30 +11,11 @@ public class Solution {
     public static void main(String[] args) {
         Solution solution =new Solution();
 
-        int[] nums1={1,2};
+//        List<String> listStr=solution.removeInvalidParentheses("(r(()()(");
+//        for(String str:listStr){
+//            System.out.println(str);
+//        }
 
-        int[] nums2={1,1};
-
-
-        int[][] ns= {{1,1,1},{1,0,1},{1,1,1}};
-        char[][] c={
-                {'5','3','.','.','7','.','.','.','.'},
-                {'6','.','.','1','9','5','.','.','.'},
-                {'.','9','8','.','.','.','.','6','.'},
-                {'8','.','.','.','6','.','.','.','3'},
-                {'4','.','.','8','.','3','.','.','1'},
-                {'7','.','.','.','2','.','.','.','6'},
-                {'.','6','.','.','.','.','2','8','.'},
-                {'.','.','.','4','1','9','.','.','5'},
-                {'.','.','.','.','8','.','.','7','9'}};
-
-
-
-
-        List<String> listStr=solution.removeInvalidParentheses("()(x()x((x(x((");
-        for(String str:listStr){
-            System.out.println(str);
-        }
         System.out.println("end");
     }
 
@@ -77,12 +58,12 @@ public class Solution {
                 List<int[]> fatherList=new ArrayList<>();
                 ch=child[y];
                 if(Character.isDigit(ch)){
-                   if(total.containsKey(ch)){
-                       total.get(ch).add(new int[]{x+1,y+1});
-                   }else{
-                       fatherList.add(new int[]{x+1,y+1});
-                       total.put(ch,fatherList);
-                   }
+                    if(total.containsKey(ch)){
+                        total.get(ch).add(new int[]{x+1,y+1});
+                    }else{
+                        fatherList.add(new int[]{x+1,y+1});
+                        total.put(ch,fatherList);
+                    }
                 }
             }
         }
@@ -179,7 +160,6 @@ public class Solution {
      * 一个简单的改进方案是使用 O(m + n) 的额外空间，但这仍然不是最好的解决方案。
      * 你能想出一个仅使用常量空间的解决方案吗？
      */
-
     public <Char> void setZeroes(int[][] matrix) {
         Set lineNum=new HashSet<Integer>();
         int[] lineZero = new int[matrix[0].length];
@@ -272,7 +252,7 @@ public class Solution {
                 }
             }
         }*/
-       // hash sort
+        // hash sort
         HashSet numSet=new HashSet<>();
         for(int num:nums){
             if(numSet.contains(num)){
@@ -285,170 +265,159 @@ public class Solution {
     }
 
     /**
+     * 242. 有效的字母异位词
+     * 给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。
+     * 注意：若 s 和 t 中每个字符出现的次数都相同，则称 s 和 t 互为字母异位词。
+     */
+    public boolean isAnagram(String s, String t) {
+        char[] sc=s.toCharArray();
+        char[] tc=t.toCharArray();
+        Arrays.sort(sc);
+        Arrays.sort(tc);
+        return String.valueOf(sc).equals(String.valueOf(tc));
+    }
+
+    /**
      * 301. 删除无效的括号
      * 给你一个由若干括号和字母组成的字符串 s ，删除最小数量的无效括号，使得输入的字符串有效。
      * 返回所有可能的结果。答案可以按 任意顺序 返回。
      */
     public List<String> removeInvalidParentheses(String s) {
-        List<Set<String>> section=new ArrayList<>(s.length());
+      /*  Solution solution=new Solution();
+        List<Set<String>> section=new ArrayList<>();
         Set<String> strSet;
-        StringBuffer str;
-
         int start=0;
         int end=-1;
         int balance=0;
 
+        //遍历处理多余右括号
         char[] sc= s.toCharArray();
-
         for(int i=0;i<sc.length;i++){
             if (sc[i] =='(') {
                 balance++;
             }else if(sc[i]==')'){
                 balance--;
                 end=i;
+            }else{
+                end=i;
             }
 
             if(balance<0){
-                //处理start到end
-                strSet=new HashSet<>();
-                str=new StringBuffer();
-                for(int n=start;n<=end;n++){
-                    str.append(sc[n]);
-                }
-                for(int m=0;m<str.length();m++){
-                    if (str.charAt(m)==')'){
-                        str.delete(m,m+1);
-                        if(str.length()>0){
-                            strSet.add(str.toString());
-                        }
-                        str.replace(m,m,")");
-                    }
-                }
+                strSet=solution.getTotalResult(s.substring(start,end+1),false);
                 if(strSet.size()>0){
                     section.add(strSet);
                 }
+                //记录位置
                 start=i+1;
                 balance=0;
             }
         }
 
-        if(balance>0){
-            //处理start到i
-            //镜像 处理 镜像
-            strSet=new HashSet<>();
-            str=new StringBuffer();
-            for(int n=sc.length-1;n>=start;n--){
-                if(sc[n]=='('){
-                    str.append(')');
-                }else if(sc[n]==')'){
-                    str.append('(');
-                }else{
-                    str.append(sc[n]);
-                }
-            }
+        //获取最后的字符串
+        if(end>=start){
+            String tail=s.substring(start);
+            if(balance==0){
+                strSet=new HashSet<>(1);
+                strSet.add(tail);
+                section.add(strSet);
+            }else if(balance>0){
+                // 最后多余左括号倒置
+                tail=new StringBuffer(tail).reverse().toString();
+                tail=tail.replace('(','#');
+                tail=tail.replace(')','(');
+                tail=tail.replace('#',')');
 
-            start=0;
-            end=-1;
-            balance=0;
-            sc=str.toString().toCharArray();
-
-            List<Set<String>> sectionLast=new ArrayList<>(s.length());
-            for(int i=0;i<sc.length;i++){
-                if (sc[i] =='(') {
-                    balance++;
-                }else if(sc[i]==')'){
-                    balance--;
-                    end=i;
-                }else{
-                    end=i;
-                }
-
-                if(balance<0){
-                    //处理start到end
-                    strSet=new HashSet<>();
-                    str=new StringBuffer();
-                    for(int n=start;n<=end;n++){
-                        str.append(sc[n]);
+                start=0;
+                end=-1;
+                balance=0;
+                sc= tail.toCharArray();
+                List<Set<String>> tailList=new ArrayList<>();
+                for(int i=0;i<sc.length;i++){
+                    if (sc[i] =='(') {
+                        balance++;
+                    }else if(sc[i]==')'){
+                        balance--;
+                        end=i;
+                    }else{
+                        end=i;
                     }
-                    for(int m=0;m<str.length();m++){
-                        if (str.charAt(m)==')'){
-                            str.delete(m,m+1);
-                            if(str.length()>0){
-                                strSet.add(str.toString());
-                            }
-                            str.replace(m,m,")");
+
+                    if(balance<0){
+                        strSet=solution.getTotalResult(tail.substring(start,end+1),true);
+                        if(strSet.size()>0){
+                            tailList.add(strSet);
                         }
+                        //记录位置
+                        start=i+1;
+                        balance=0;
                     }
-                    sectionLast.add(strSet);
-                    start=i+1;
-                    balance=0;
-                }else if(balance==0){
-                    strSet=new HashSet<>();
-                    str=new StringBuffer();
-                    for(int in=start;in<=end;in++){
-                        str.append(sc[in]);
+                }
+                if(balance == 0 && end>=start) {
+                    //倒置
+                    String tailTail = new StringBuffer(tail.substring(start)).reverse().toString();
+                    tailTail=tailTail.replace('(','#');
+                    tailTail=tailTail.replace(')','(');
+                    tailTail=tailTail.replace('#',')');
+                    strSet = new HashSet<>(1);
+                    strSet.add(tailTail);
+                    tailList.add(strSet);
+                }
+                if(tailList.size()>0){
+                    //list倒置
+                    Collections.reverse(tailList);
+                    for(Set<String> tailSet:tailList){
+                        section.add(tailSet);
                     }
-                    if(str.length()>0){
-                        strSet.add(str.toString());
-                    }
-
-                    if(strSet.size()>0){
-                        section.add(strSet);
-                    }
-                    start=i+1;
                 }
             }
-
-            for(int i=sectionLast.size()-1;i>=0;i--){
-                Set<String> lastSet=sectionLast.get(i);
-                Set<String> lastSetIn=new HashSet<>();
-                for(String strLast:lastSet){
-                    strLast=new StringBuffer(strLast).reverse().toString();
-                    strLast=strLast.replace('(','#');
-                    strLast=strLast.replace(')','(');
-                    strLast=strLast.replace('#',')');
-                    lastSetIn.add(strLast);
-                }
-                if(lastSet.size()>0){
-                    section.add(lastSetIn);
-                }
-            }
-        }else{
-            strSet=new HashSet<>();
-            str=new StringBuffer();
-            for(int i=start;i<sc.length;i++){
-                str.append(sc[i]);
-            }
-            strSet.add(str.toString());
-
-            section.add(strSet);
         }
 
         Set<String> resultSet=new HashSet<>();
-        Set<String> betweentSet=new HashSet<>();
+        Set<String> betweenSet=new HashSet<>();
         for(Set<String> secSet:section){
             for(String sec:secSet){
                 if(resultSet.isEmpty()){
-                    betweentSet.add(sec);
+                    betweenSet.add(sec);
                 }else{
                     for(String finalStr:resultSet){
-                        betweentSet.add(finalStr+sec);
+                        betweenSet.add(finalStr+sec);
                     }
                 }
             }
-            resultSet=betweentSet;
-            betweentSet=new HashSet<>();
+            resultSet=betweenSet;
+            betweenSet=new HashSet<>();
         }
 
-        List<String> resultList=new ArrayList<>(s.length());
-        for(String finalStr:resultSet){
-            resultList.add(finalStr);
+
+        return null;
+    }
+   /* private Set<String> getTotalResult(String str,Boolean reverse){
+        Set<String> strSet=new HashSet<>();
+        //返回所有正确的结果
+        StringBuffer sb=new StringBuffer(str);
+        String reverseStr;
+        for(int i=0;i<str.length();i++){
+            if (str.charAt(i)==')'){
+                sb.delete(i,i+1);
+                if(sb.length()>0){
+                    if(reverse){
+                        reverseStr=sb.reverse().toString();
+                        reverseStr=reverseStr.replace('(','#');
+                        reverseStr=reverseStr.replace(')','(');
+                        reverseStr=reverseStr.replace('#',')');
+                        strSet.add(reverseStr);
+                        sb.reverse();
+                    }else{
+                        strSet.add(sb.toString());
+                    }
+                }
+                sb.replace(i,i,")");
+            }
         }
 
-        if(resultList.size()==0){
-            resultList.add("");
-        }
-        return resultList;
+        return strSet;
+        */
+        return null;
     }
 
     /**
@@ -482,6 +451,25 @@ public class Solution {
         }
 
         return arr;
+    }
+
+    /**
+     * 383. 赎金信
+     * 给定一个赎金信 (ransom) 字符串和一个杂志(magazine)字符串，判断第一个字符串 ransom 能不能由第二个字符串 magazines 里面的字符构成。如果可以构成，返回 true ；否则返回 false。
+     * (题目说明：为了不暴露赎金信字迹，要从杂志上搜索各个需要的字母，组成单词来表达意思。杂志字符串中的每个字符只能在赎金信字符串中使用一次。)
+     */
+    public boolean canConstruct(String ransomNote, String magazine) {
+        boolean result=true;
+
+        for(char c:ransomNote.toCharArray()){
+            if(!magazine.contains(String.valueOf(c))){
+                result=false;
+                break;
+            }
+            magazine=magazine.substring(0,magazine.indexOf(String.valueOf(c)))+magazine.substring(magazine.indexOf(String.valueOf(c))+1);
+        }
+
+        return result;
     }
 
     /**
@@ -535,7 +523,51 @@ public class Solution {
         }
         return nums1;
     }
-    
+
+    /**
+     * 500. 键盘行
+     * 给你一个字符串数组 words ，只返回可以使用在 美式键盘 同一行的字母打印出来的单词。键盘如下图所示。
+     * 美式键盘 中：
+     * 第一行由字符 "qwertyuiop" 组成。
+     * 第二行由字符 "asdfghjkl" 组成。
+     * 第三行由字符 "zxcvbnm" 组成。
+     */
+    public String[] findWords(String[] words) {
+        String line1="qwertyuiop";
+        String line2="asdfghjkl";
+        String line3="zxcvbnm";
+
+        StringBuffer sb=new StringBuffer();
+        String cs;
+        boolean flag1;
+        boolean flag2;
+        boolean flag3;
+        for(String word:words){
+            flag1=true;
+            flag2=true;
+            flag3=true;
+            for(char c:word.toCharArray()){
+                cs=String.valueOf(Character.toLowerCase(c));
+
+                if(flag1 && !line1.contains(cs)){
+                    flag1=false;
+                }
+                if(flag2 && !line2.contains(cs)){
+                    flag2=false;
+                }
+                if(flag3 && !line3.contains(cs)){
+                    flag3=false;
+                }
+            }
+
+            if(flag1 || flag2 || flag3){
+                sb.append(word).append(",");
+            }
+        }
+
+        return sb.length()>0?sb.substring(0,sb.length()-1).split(","):new String[0];
+    }
+
     /**
      * 566. 重塑矩阵
      * 在 MATLAB 中，有一个非常有用的函数 reshape ，它可以将一个 m x n 矩阵重塑为另一个大小不同（r x c）的新矩阵，但保留其原始数据。
