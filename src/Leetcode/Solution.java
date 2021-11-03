@@ -11,10 +11,14 @@ public class Solution {
     public static void main(String[] args) {
         Solution solution =new Solution();
 
-//        List<String> listStr=solution.removeInvalidParentheses("(r(()()(");
-//        for(String str:listStr){
-//            System.out.println(str);
-//        }
+        // 301. 删除无效的括号
+        List<String> listStr=solution.removeInvalidParentheses("(r(()()(");
+        for(String str:listStr){
+            System.out.println(str);
+        }
+
+        //335 路径交叉
+        solution.isSelfCrossing(new int[]{2222});
 
         System.out.println("end");
     }
@@ -38,6 +42,26 @@ public class Solution {
             }
         }
         return null;
+    }
+
+    /**
+     * 20. 有效的括号
+     * 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串 s ，判断字符串是否有效。
+     * 有效字符串需满足：
+     * 左括号必须用相同类型的右括号闭合。
+     * 左括号必须以正确的顺序闭合。
+     */
+    public boolean isValid(String s) {
+        if(s.length()==1){
+            return false;
+        }
+        for (int i=0;i<s.length();i++){
+            char c=s.charAt(i);
+            if(s.charAt(i)==')' && s.charAt(i-1)=='('){
+//                isValid.
+            }
+        }
+        return false;
     }
 
     /**
@@ -454,6 +478,55 @@ public class Solution {
     }
 
     /**
+     * 335. 路径交叉
+     * 给你一个整数数组 distance 。
+     * 从 X-Y 平面上的点 (0,0) 开始，先向北移动 distance[0] 米，然后向西移动 distance[1] 米，向南移动 distance[2] 米，向东移动 distance[3] 米，持续移动。也就是说，每次移动后你的方位会发生逆时针变化。
+     * 判断你所经过的路径是否相交。如果相交，返回 true ；否则，返回 false 。
+     */
+    public boolean isSelfCrossing(int[] distance) {
+        int[] start;
+        int[] end;
+        int[][] line;
+        int[][][] track=new int[distance.length][2][2];
+
+        for(int n=0;n<distance.length;n++){
+            line=new int[2][2];
+
+            //起点
+            if(n==0){
+                start=new int[]{0,0};
+            }else{
+                start=new int[2];
+                start[0]=track[n-1][1][0];
+                start[1]=track[n-1][1][1];
+            }
+            line[0]=start;
+
+
+            //终点
+            end=new int[2];
+            if(n%2==0){
+                //y
+                end[1]=start[1]+(n%4==0?1:-1)*distance[n];
+                end[0]=start[0];
+            }else{
+                end[0]=start[0]+(n%4==3?1:-1)*distance[n];
+                end[1]=start[1];
+            }
+            line[1]=end;
+
+            //遍历比较线是否相交
+
+
+            //
+            track[n]=line;
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 383. 赎金信
      * 给定一个赎金信 (ransom) 字符串和一个杂志(magazine)字符串，判断第一个字符串 ransom 能不能由第二个字符串 magazines 里面的字符构成。如果可以构成，返回 true ；否则返回 false。
      * (题目说明：为了不暴露赎金信字迹，要从杂志上搜索各个需要的字母，组成单词来表达意思。杂志字符串中的每个字符只能在赎金信字符串中使用一次。)
@@ -607,4 +680,17 @@ public class Solution {
         return result;
     }
 
+    /**
+     * 575. 分糖果
+     * 给定一个偶数长度的数组，其中不同的数字代表着不同种类的糖果，每一个数字代表一个糖果。
+     * 你需要把这些糖果平均分给一个弟弟和一个妹妹。返回妹妹可以获得的最大糖果的种类数
+     */
+    public int distributeCandies(int[] candyType) {
+        Set<Integer> type=new HashSet<>(candyType.length);
+        for(int i:candyType){
+            type.add(i);
+        }
+
+        return candyType.length/2>type.size()?type.size():candyType.length/2;
+    }
 }
